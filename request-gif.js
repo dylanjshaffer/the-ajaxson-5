@@ -19,38 +19,45 @@ function fetchAndDisplayGif(event) {
     event.preventDefault();
 
     // get the user's input text from the DOM
-    var searchQuery = $("tag").val;
+    var searchQuery = $("#tag").val();
+    var captcha = $("#riddle").val();
 
     // configure a few parameters to attach to our request
     var params = {
         api_key: "dc6zaTOxFJmzC",
         tag : "jackson 5 " + searchQuery
     };
-    console.log(params);
 
-    // make an ajax request for a random GIF
-    $.ajax({
-        url: "https://api.giphy.com/v1/gifs/random",
-        data: params, // attach those extra parameters onto the request
-        success: function(response) {
-            // if the response comes back successfully, the code in here will execute.
+    if (captcha != '5') {
+        $("#feedback").text("No gifs for you!");
+        setGifLoadedStatus(false);
+    } else {
+        // make an ajax request for a random GIF
+        $.ajax({
+            url: "https://api.giphy.com/v1/gifs/random",
+            data: params, // attach those extra parameters onto the request
+            success: function(response) {
+                // if the response comes back successfully, the code in here will execute.
 
-            // jQuery passes us the `response` variable, a regular javascript object created from the JSON the server gave us
-            console.log("we received a response!");
-            console.log(response);
+                // jQuery passes us the `response` variable, a regular javascript object created from the JSON the server gave us
+                console.log("we received a response!");
+                console.log(response);
 
-            var imgUrl = response.data.image_url;
-            $("#gif").attr("src", imgUrl);
-            setGifLoadedStatus(true);
-        },
-        error: function() {
-            // if something went wrong, the code in here will execute instead of the success function
+                var imgUrl = response.data.image_url;
 
-            // give the user an error message
-            $("#feedback").text("Sorry, could not load GIF. Try again!");
-            setGifLoadedStatus(false);
-        }
-    });
+                $("#gif").attr("src", imgUrl);
+                setGifLoadedStatus(true);
+            },
+            error: function() {
+                // if something went wrong, the code in here will execute instead of the success function
+
+                // give the user an error message
+                $("#feedback").text("Sorry, could not load GIF. Try again!");
+                setGifLoadedStatus(false);
+            }
+        });
+    }
+
 
     // TODO
     // give the user a "Loading..." message while they wait
