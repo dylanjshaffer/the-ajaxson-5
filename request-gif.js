@@ -27,15 +27,23 @@ function fetchAndDisplayGif(event) {
         api_key: "dc6zaTOxFJmzC",
         tag : "jackson 5 " + searchQuery
     };
+    console.log(params);
 
     if (captcha != '5') {
+        $("#validation").children().addClass("validation-error");
         $("#feedback").text("No gifs for you!");
         setGifLoadedStatus(false);
     } else {
+        if ($("#validation").children().hasClass("validation-error")) {
+            $("#validation").children().toggleClass("validation-error");
+        }
         // make an ajax request for a random GIF
         $.ajax({
             url: "https://api.giphy.com/v1/gifs/random",
             data: params, // attach those extra parameters onto the request
+            beforeSend: function(){
+              $('#loader').show();
+            },
             success: function(response) {
                 // if the response comes back successfully, the code in here will execute.
 
@@ -54,14 +62,12 @@ function fetchAndDisplayGif(event) {
                 // give the user an error message
                 $("#feedback").text("Sorry, could not load GIF. Try again!");
                 setGifLoadedStatus(false);
+            },
+            complete: function(data){
+              $("#loader").hide();
             }
         });
     }
-
-
-    // TODO
-    // give the user a "Loading..." message while they wait
-
 }
 
 
@@ -70,6 +76,7 @@ function fetchAndDisplayGif(event) {
  * if the GIF is loaded: displays the image and hides the feedback label
  * otherwise: hides the image and displays the feedback label
  */
+
 function setGifLoadedStatus(isCurrentlyLoaded) {
     $("#gif").attr("hidden", !isCurrentlyLoaded);
     $("#feedback").attr("hidden", isCurrentlyLoaded);
